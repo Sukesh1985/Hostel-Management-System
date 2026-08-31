@@ -80,10 +80,21 @@ The dev server proxies `/api` requests to `http://localhost:4000` (see
 
 ### 3. Production build
 
+Building the client and then starting the server serves both the API and
+the frontend from one process on one URL — no separate static host or CORS
+setup needed:
+
 ```bash
-cd client && npm run build   # outputs client/dist
-cd server && npm start        # serve the API; front the built client with any static host/reverse proxy
+npm install --prefix client && npm run build --prefix client   # outputs client/dist
+npm install --prefix server
+npm start --prefix server        # serves the built client + the API on the same port
 ```
+
+## Deploying online
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step instructions to get a
+real public URL (Render free tier, Railway/Fly.io, or your own VPS). A
+`render.yaml` blueprint is included for a one-click Render deploy.
 
 ## Project structure
 

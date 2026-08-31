@@ -1,4 +1,6 @@
 require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 
@@ -33,6 +35,21 @@ app.use('/api/inout', inoutRoutes);
 app.use('/api/grievances', grievanceRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/users', userRoutes);
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Not found' });
+  next();
+});
+
+// Serve the built React app (client/dist) when present, so a single deploy
+// (e.g. one Render web service) hosts both the API and the frontend on one URL.
+const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.use((req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
